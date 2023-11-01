@@ -42,7 +42,7 @@ const QuestionInEnglishPage = ({ navigation }) => {
 
 	const loadData = () => {
 		axios
-			.get("http://192.168.8.161:8082/api/questionnaire/english/all")
+			.get("http://192.168.8.162:8082/api/questionnaire/english/all")
 			// .get(
 			// 	"http://192.168.45.147:8081/api/questionnaire/english/all",
 			// )
@@ -99,7 +99,14 @@ const QuestionInEnglishPage = ({ navigation }) => {
 									</Text>
 								</View>
 								<View
-									style={{ backgroundColor: "#FFC107", borderRadius: 17, marginTop:10, padding:14 }}>
+									style={{
+										// backgroundColor: "#FFC107",
+										borderColor: "#FFC107", // Add this line to set the border color
+										borderWidth: 3,
+										borderRadius: 17,
+										marginTop: 10,
+										padding: 14,
+									}}>
 									<View
 										style={{
 											justifyContent: "center",
@@ -121,7 +128,7 @@ const QuestionInEnglishPage = ({ navigation }) => {
 											gap: 10,
 											marginBottom: 15,
 											color: "black",
-											marginRight: 25
+											marginRight: 25,
 										}}>
 										<RadioButton
 											label={
@@ -181,7 +188,7 @@ const QuestionInEnglishPage = ({ navigation }) => {
 											value={1}
 										/>
 										<RadioButton
-										textColor="black"
+											textColor="black"
 											label={
 												questions[
 													questionIndex + index

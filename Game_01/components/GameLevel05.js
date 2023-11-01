@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
 	board: {
 		width: 380,
 		height: 400,
-		backgroundColor: "#191970",
+		backgroundColor: "black",
 		borderColor: "white",
 	},
 	row: {

@@ -40,7 +40,7 @@ const QuestionInSinhalaPage = ({ navigation }) => {
 
 	const loadData = () => {
 		axios
-			.get("http://192.168.8.161:8082/api/questionnaire/sinhala/all")
+			.get("http://192.168.8.162:8082/api/questionnaire/sinhala/all")
 			// .get(
 			// 	"http://192.168.45.147:8081/api/questionnaire/sinhala/all",
 			// )
@@ -98,7 +98,9 @@ const QuestionInSinhalaPage = ({ navigation }) => {
 								</View>
 								<View
 									style={{
-										backgroundColor: "#FFC107",
+										// backgroundColor: "#FFC107",
+										borderColor: "#FFC107", // Add this line to set the border color
+										borderWidth: 3,
 										borderRadius: 17,
 										marginTop: 10,
 										padding: 14,
