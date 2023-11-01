@@ -134,7 +134,7 @@ const Level01InstructionsPage = ({ navigation }) => {
 								}}
 								onPress={() =>
 									// navigation.navigate("Candy Crush")
-                                    navigation.navigate("GameLevel04")
+                                    navigation.navigate("GameLevel05")
 								}>
 								<Text
 									bold
