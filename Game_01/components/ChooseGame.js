@@ -34,7 +34,7 @@ const ChooseGame = ({ navigation }) => {
 								width: 340,
 							}}
 							onPress={() =>
-								navigation.navigate("Candy Crush")
+								navigation.navigate("Instructions 01")
 							}>
 							<View style={styles.container}>
 								<View style={styles.imageContainer}>

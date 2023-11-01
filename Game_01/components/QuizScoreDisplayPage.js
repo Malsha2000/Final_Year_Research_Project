@@ -28,7 +28,7 @@ const QuizScoreDisplayPage = ({ route, navigation }) => {
 						style={styles.button}
 						onPress={() => navigation.navigate("ChooseGame")}>
 						<Text bold medium center style={styles.buttonText}>
-							Play Games
+							Choose a Game
 						</Text>
 					</TouchableOpacity>
 				</View>

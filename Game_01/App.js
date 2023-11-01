@@ -13,6 +13,8 @@ import NewGame from "./components/NewGame";
 import CandyCrushGameLevel02 from "./components/GameLevel2";
 import ChooseGame from "./components/ChooseGame";
 import CandyCrushGameLevel03 from "./components/GameLevel3";
+import Level01InstructionsPage from "./components/Level01Instructions";
+import CandyCrushGameLevel04 from "./components/GameLevel04";
 
 export default function App() {
 	const Stack = createNativeStackNavigator();
@@ -48,10 +50,12 @@ export default function App() {
 					name="Quiz Score"
 					component={QuizScoreDisplayPage}
 				/>
+				<Stack.Screen name="Instructions 01" component={Level01InstructionsPage} />
 				<Stack.Screen
 					name="Candy Crush"
 					component={CandyCrushGame}
 				/>
+
 				<Stack.Screen
 					name="Level 02"
 					component={CandyCrushGameLevel02}
@@ -59,6 +63,7 @@ export default function App() {
 				<Stack.Screen name="NewGame" component={NewGame} />
 				<Stack.Screen name="ChooseGame" component={ChooseGame} />
 				<Stack.Screen name="GameLevel03" component={CandyCrushGameLevel03} />
+				<Stack.Screen name="GameLevel04" component={CandyCrushGameLevel04} />
 			</Stack.Navigator>
 		</NavigationContainer>
 		// <View style={styles.container}>
