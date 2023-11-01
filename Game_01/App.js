@@ -15,6 +15,7 @@ import ChooseGame from "./components/ChooseGame";
 import CandyCrushGameLevel03 from "./components/GameLevel3";
 import Level01InstructionsPage from "./components/Level01Instructions";
 import CandyCrushGameLevel04 from "./components/GameLevel04";
+import CandyCrushGameLevel05 from "./components/GameLevel05";
 
 export default function App() {
 	const Stack = createNativeStackNavigator();
@@ -64,6 +65,7 @@ export default function App() {
 				<Stack.Screen name="ChooseGame" component={ChooseGame} />
 				<Stack.Screen name="GameLevel03" component={CandyCrushGameLevel03} />
 				<Stack.Screen name="GameLevel04" component={CandyCrushGameLevel04} />
+				<Stack.Screen name="GameLevel05" component={CandyCrushGameLevel05} />
 			</Stack.Navigator>
 		</NavigationContainer>
 		// <View style={styles.container}>

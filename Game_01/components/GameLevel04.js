@@ -1,275 +1,270 @@
 import React, { useState, useEffect } from "react";
 import {
-	View,
-	Text,
-	TouchableOpacity,
-	StyleSheet,
-	Alert,
-	Button,
-	ImageBackground,
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  Button,
+  ImageBackground,
+  ScrollView,
 } from "react-native";
+import { Picker } from '@react-native-picker/picker';
 
-const BoardSize = 8;
-const CandyTypes = ["🤰", "🥦", "🐶", "🍧", "🍉", "🍄", "🍬", "👶", "🚫"];
+const BoardSize = 6;
+const CandyTypes = ["🤰", "🥦", "🐶", "🍧", "🍉", "🍄", "🍬", "👶"];
 const WinningScore = 200;
 const InitialTime = 120;
+const BackgroundImages = [
+ "red", "pink"
+];
+
+const CharacterImages = ["🧑", "👩", "👨", "👦", "👧"];
 
 const CandyCrushGameLevel04 = ({ navigation }) => {
-	const [board, setBoard] = useState(createBoard());
-	const [score, setScore] = useState(0);
-	const [timeLeft, setTimeLeft] = useState(InitialTime);
-	const [selectedCandy, setSelectedCandy] = useState(null);
-	const [hammerPowerUp, setHammerPowerUp] = useState(3); // initial 3 hammers
-	const [shufflePowerUp, setShufflePowerUp] = useState(2); // initial 2 shuffles
+//   const [board, setBoard] = useState(createBoard());
+const [board, setBoard] = useState([]);
+  const [score, setScore] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(InitialTime);
+  const [selectedCandy, setSelectedCandy] = useState(null);
+  const [backgroundImage, setBackgroundImage] = useState(BackgroundImages[0]);
+  const [character, setCharacter] = useState(CharacterImages[0]);
+  const [selectedCandyTypes, setSelectedCandyTypes] = useState(CandyTypes.slice(0, BoardSize));
 
-	useEffect(() => {
-		const timer = setInterval(() => {
-			setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
-		}, 1000);
-		return () => clearInterval(timer);
-	}, []);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
-	useEffect(() => {
-		if (timeLeft === 0) {
-			Alert.alert(
-				"Game Over",
-				`Time is up! You ${
-					score > WinningScore ? "win!" : "lose!"
-				}`,
-			);
-			resetGame();
-		}
-	}, [timeLeft]);
+  useEffect(() => {
+    if (timeLeft === 0) {
+      Alert.alert(
+        "Game Over",
+        `Time is up! You ${score > WinningScore ? "win!" : "lose!"}`
+      );
+      resetGame();
+    }
+  }, [timeLeft]);
 
-	function createBoard() {
-		const newBoard = [];
-		for (let row = 0; row < BoardSize; row++) {
-			const newRow = [];
-			for (let col = 0; col < BoardSize; col++) {
-				newRow.push(
-					CandyTypes[
-						Math.floor(Math.random() * CandyTypes.length)
-					],
+  const createBoard = () => {
+    const newBoard = [];
+    for (let row = 0; row < BoardSize; row++) {
+      const newRow = [];
+      for (let col = 0; col < BoardSize; col++) {
+        newRow.push(selectedCandyTypes[Math.floor(Math.random() * selectedCandyTypes.length)]);
+      }
+      newBoard.push(newRow);
+    }
+    return newBoard;
+  };
+
+  useEffect(() => {
+    setBoard(createBoard());
+  }, [selectedCandyTypes]);
+
+  const resetGame = () => {
+    setBoard(createBoard());
+    setSelectedCandy(null);
+  };
+
+  const handlePress = (row, col) => {
+    if (board[row][col] === "🚫") return; // Prevent pressing the "🚫" emoji
+
+    if (selectedCandy) {
+      const [selectedRow, selectedCol] = selectedCandy;
+      const dx = Math.abs(selectedRow - row);
+      const dy = Math.abs(selectedCol - col);
+      if ((dx === 1 && dy === 0) || (dx === 0 && dy === 1)) {
+        // Adjacent candy selected
+        const newBoard = JSON.parse(JSON.stringify(board)); // Deep clone the board
+        [newBoard[selectedRow][selectedCol], newBoard[row][col]] = [
+          newBoard[row][col],
+          newBoard[selectedRow][selectedCol],
+        ];
+        if (checkForMatch(newBoard)) {
+          setBoard(newBoard);
+        }
+      }
+      setSelectedCandy(null);
+    } else {
+      setSelectedCandy([row, col]);
+    }
+  };
+
+  function checkForMatch(board) {
+	const toClear = [];
+	// Check for horizontal matches
+	for (let row = 0; row < BoardSize; row++) {
+		for (let col = 0; col < BoardSize - 2; col++) {
+			const candy = board[row][col];
+			if (
+				candy &&
+				candy === board[row][col + 1] &&
+				candy === board[row][col + 2]
+			) {
+				toClear.push(
+					[row, col],
+					[row, col + 1],
+					[row, col + 2],
 				);
 			}
-			newBoard.push(newRow);
 		}
-		return newBoard;
 	}
 
-	const resetGame = () => {
-		setBoard(createBoard());
-		setScore(0);
-		setTimeLeft(InitialTime);
-		setSelectedCandy(null);
-		setHammerPowerUp(3); // reset hammers
-		setShufflePowerUp(2); // reset shuffles
-	};
-
-	const handlePress = (row, col) => {
-		if (board[row][col] === "🚫") return; // Prevent pressing the "🚫" emoji
-
-		if (selectedCandy) {
-			const [selectedRow, selectedCol] = selectedCandy;
-			const dx = Math.abs(selectedRow - row);
-			const dy = Math.abs(selectedCol - col);
-			if ((dx === 1 && dy === 0) || (dx === 0 && dy === 1)) {
-				// Adjacent candy selected
-				const newBoard = JSON.parse(JSON.stringify(board)); // Deep clone the board
-				[newBoard[selectedRow][selectedCol], newBoard[row][col]] =
-					[
-						newBoard[row][col],
-						newBoard[selectedRow][selectedCol],
-					];
-				if (checkForMatch(newBoard)) {
-					setBoard(newBoard);
-				}
+	// Check for vertical matches
+	for (let col = 0; col < BoardSize; col++) {
+		for (let row = 0; row < BoardSize - 2; row++) {
+			const candy = board[row][col];
+			if (
+				candy &&
+				candy === board[row + 1][col] &&
+				candy === board[row + 2][col]
+			) {
+				toClear.push(
+					[row, col],
+					[row + 1, col],
+					[row + 2, col],
+				);
 			}
-			setSelectedCandy(null);
-		} else {
-			setSelectedCandy([row, col]);
 		}
-	};
+	}
 
-	const handleHammer = (row, col) => {
-		if (hammerPowerUp > 0 && board[row][col] !== "🚫") {
-			const newBoard = JSON.parse(JSON.stringify(board));
-			newBoard[row][col] = null;
-			setBoard(newBoard);
-			setHammerPowerUp(hammerPowerUp - 1);
-			checkForMatch(newBoard);
+	if (toClear.length === 0) return false; // No matches found
+
+	// Clear matched candies
+	let points = 0;
+	toClear.forEach(([row, col]) => {
+		if (board[row][col] !== null) {
+			points += 5; // Assuming each candy gives 5 points
+			board[row][col] = null;
 		}
-	};
+	});
+	setScore((prevScore) => prevScore + points);
 
-	const handleShuffle = () => {
-		if (shufflePowerUp > 0) {
-			const newBoard = createBoard();
-			setBoard(newBoard);
-			setShufflePowerUp(shufflePowerUp - 1);
+	// Make candies fall down
+	for (let col = 0; col < BoardSize; col++) {
+		let shift = 0;
+		for (let row = BoardSize - 1; row >= 0; row--) {
+			if (board[row][col] === null) {
+				shift++;
+			} else if (shift > 0) {
+				board[row + shift][col] = board[row][col];
+				board[row][col] = null;
+			}
 		}
-	};
+	}
 
-	function checkForMatch(board) {
-		const toClear = [];
-		// Check for horizontal matches
+	// Refill the board
+	for (let col = 0; col < BoardSize; col++) {
 		for (let row = 0; row < BoardSize; row++) {
-			for (let col = 0; col < BoardSize - 2; col++) {
-				const candy = board[row][col];
-				if (
-					candy &&
-					candy === board[row][col + 1] &&
-					candy === board[row][col + 2]
-				) {
-					toClear.push(
-						[row, col],
-						[row, col + 1],
-						[row, col + 2],
-					);
-				}
-			}
-		}
-
-		// Check for vertical matches
-		for (let col = 0; col < BoardSize; col++) {
-			for (let row = 0; row < BoardSize - 2; row++) {
-				const candy = board[row][col];
-				if (
-					candy &&
-					candy === board[row + 1][col] &&
-					candy === board[row + 2][col]
-				) {
-					toClear.push(
-						[row, col],
-						[row + 1, col],
-						[row + 2, col],
-					);
-				}
-			}
-		}
-
-		if (toClear.length > 0) {
-			const newBoard = JSON.parse(JSON.stringify(board));
-			toClear.forEach(([row, col]) => {
-				newBoard[row][col] = null;
-			});
-			const newScore = score + toClear.length * 10;
-			setScore(newScore);
-			fillBoard(newBoard);
-			return true;
-		}
-		return false;
-	}
-
-	function fillBoard(board) {
-		for (let col = 0; col < BoardSize; col++) {
-			let emptySpaces = 0;
-			for (let row = BoardSize - 1; row >= 0; row--) {
-				if (!board[row][col]) {
-					emptySpaces++;
-				} else if (emptySpaces > 0) {
-					board[row + emptySpaces][col] = board[row][col];
-					board[row][col] = null;
-				}
-			}
-			for (let row = 0; row < emptySpaces; row++) {
+			if (board[row][col] === null) {
 				board[row][col] =
 					CandyTypes[
 						Math.floor(Math.random() * CandyTypes.length)
 					];
 			}
 		}
-		setBoard(board);
 	}
 
-	const CandyButton = ({ row, col }) => (
-		<TouchableOpacity
-			style={styles.candyButton}
-			onPress={() => handlePress(row, col)}
-			onLongPress={() => handleHammer(row, col)}>
-			<Text style={styles.candyEmoji}>{board[row][col]}</Text>
-		</TouchableOpacity>
-	);
+	return true; // Matches were found and cleared
+}
 
-	return (
-		<View style={styles.container}>
-			<ImageBackground
-				source={require("../assets/gameBackground.jpg")}
-				style={styles.background}>
-				<View style={styles.header}>
-					<Text style={styles.headerText}>Score: {score}</Text>
-					<Text style={styles.headerText}>
-						Time Left: {timeLeft}s
-					</Text>
-				</View>
-				<View style={styles.board}>
-					{board.map((row, rowIndex) => (
-						<View key={rowIndex} style={styles.row}>
-							{row.map((candy, colIndex) => (
-								<CandyButton
-									key={colIndex}
-									row={rowIndex}
-									col={colIndex}
-								/>
-							))}
-						</View>
-					))}
-				</View>
-				<View style={styles.footer}>
-					<Button title="Shuffle" onPress={handleShuffle} />
-					<Text style={styles.footerText}>
-						Hammer: {hammerPowerUp} | Shuffle: {shufflePowerUp}
-					</Text>
-					<Button title="Reset" onPress={resetGame} />
-				</View>
-			</ImageBackground>
-		</View>
-	);
+  return (
+	<ScrollView style={styles.container}>
+  <ImageBackground
+      source={backgroundImage}
+      style={{ flex: 1, justifyContent: 'center', alignItems: 'center', height:800 }}
+      resizeMode="cover"
+    >
+      <Button title="Refresh" onPress={resetGame} color="#702963" />
+      <Text>Score: {score}</Text>
+      <Text>Time Left: {timeLeft}s</Text>
+      <Picker
+        selectedValue={backgroundImage}
+        style={{ height: 5, width: 250 }}
+        onValueChange={(itemValue) => setBackgroundImage(itemValue)}
+      >
+        {BackgroundImages.map((img, index) => (
+          <Picker.Item label={`Background ${index + 1}`} value={img} key={index} />
+        ))}
+      </Picker>
+	  <View style={styles.row}>
+	  {selectedCandyTypes.slice(Math.ceil(selectedCandyTypes.length / 2)).map((candyType, idx) => (
+        <Picker
+		key={idx + Math.ceil(selectedCandyTypes.length / 2)}
+          selectedValue={candyType}
+          style={{ height: 1, width: 120, backgroundColor: '#37474F', borderRadius:20 }}
+          onValueChange={(itemValue) => {
+            const updatedCandyTypes = [...selectedCandyTypes];
+            updatedCandyTypes[idx] = itemValue;
+            setSelectedCandyTypes(updatedCandyTypes);
+          }}
+        >
+          {CandyTypes.map((candy, index) => (
+            <Picker.Item label={candy} value={candy} key={index} />
+          ))}
+        </Picker>
+      ))}
+	  </View>
+     <View style={styles.board}>
+				{board.map((row, rowIndex) => (
+					<View key={rowIndex} style={styles.row}>
+						{row.map((candy, colIndex) => (
+							<TouchableOpacity
+								key={colIndex}
+								style={styles.candy}
+								onPress={() =>
+									handlePress(rowIndex, colIndex)
+								}>
+								<Text style={styles.candyText}>
+									{candy}
+								</Text>
+							</TouchableOpacity>
+						))}
+					</View>
+				))}
+			</View>
+    </ImageBackground>
+	</ScrollView>
+  );
 };
 
 const styles = StyleSheet.create({
-	container: {
+	backgroundImage: {
 		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
 	},
-	background: {
-		flex: 1,
-	},
-	header: {
-		flexDirection: "row",
-		justifyContent: "space-between",
-		padding: 16,
-	},
-	headerText: {
-		fontSize: 18,
+	text: {
+		color: "black",
+		marginBottom: 5,
 		fontWeight: "bold",
-		color: "#fff",
+		fontSize: 16,
 	},
 	board: {
-		flex: 1,
-		padding: 16,
-		justifyContent: "center",
-		alignItems: "center",
+		width: 380,
+		height: 380,
+		backgroundColor: "#191970",
+		borderColor: "white",
+		marginTop: 120
 	},
 	row: {
+		// flex: 1,
 		flexDirection: "row",
 	},
-	candyButton: {
-		width: 40,
-		height: 40,
+	candy: {
+		flex: 1,
+		aspectRatio: 1,
 		justifyContent: "center",
 		alignItems: "center",
-		margin: 2,
+		borderColor: "white",
+		borderWidth: 1,
+		borderRadius: 4,
 	},
-	candyEmoji: {
+	candyText: {
 		fontSize: 30,
-	},
-	footer: {
-		flexDirection: "row",
-		justifyContent: "space-between",
-		padding: 16,
-	},
-	footerText: {
-		fontSize: 18,
-		color: "#fff",
 	},
 });
 
